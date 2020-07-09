@@ -1,5 +1,6 @@
 import socket  
 import time
+import threading
 
 # ip 주소 받아오기
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -13,13 +14,21 @@ print (f"[연결 소켓] == {server_address}")
 
 # send, recv 함수 정의
 def send(sock):
-    sendData = input('>>>')
-    sock.send(sendData.encode('utf-8'))
+    while True:
+        sendData = input('>>>')
+        sock.send(sendData.encode('utf-8'))
 
 def recv(sock):
-    recvData = sock.recv(1024)
-    print('상대방 :', recvData.decode('utf-8'))
+    while True:
+        recvData = sock.recv(1024)
+        print('상대방 :', recvData.decode('utf-8'))
+
+# 쓰레딩
+sender = threading.Thread(target=send, args=(client_socket,))
+recevier = threading.Thread(target=recv, args=(client_socket,))
+sender.start()
+recevier.start()
 
 while True:
-    send(client_socket)
-    recv(client_socket)
+    time.sleep(1)
+    pass
